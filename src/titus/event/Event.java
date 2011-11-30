@@ -1,7 +1,7 @@
 package titus.event;
 
 public enum Event {
-	
-	UNKNOWN;
+
+	INIT_NETWORK;
 
 }

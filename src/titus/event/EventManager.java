@@ -1,22 +1,61 @@
 package titus.event;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EventManager {
 
-	private final Map<Event, EventHandler> events = new HashMap<Event, EventHandler>();
+	public static EventHandler toEventHandler(Class<?> clazz) throws InstantiationException, IllegalAccessException {
+		return (EventHandler) clazz.newInstance();
+	}
 
-	public EventHandler getHandler(Event event) {
+	private final Map<Event, ArrayList<EventHandler>> events = new HashMap<Event, ArrayList<EventHandler>>();
+
+	public List<EventHandler> getHandlers(Event event) {
 		return events.get(event);
 	}
 
 	public void dispatch(Event event) {
-		EventHandler handler = getHandler(event);
+		List<EventHandler> handlers = getHandlers(event);
 
-		if (handler != null) {
-			handler.handle(event);
+		if (handlers != null) {
+			for (EventHandler handler : handlers) {
+				handler.handle(event);
+			}
 		}
+	}
+
+	public void register(Event event, EventHandler... handlers) {
+		if (handlers == null || getHandlers(event) == null) {
+			createEventEntry(event);
+			return;
+		}
+
+		for (EventHandler handler : handlers) {
+			getHandlers(event).add(handler);
+		}
+	}
+
+	public void register(Event event, Class<?>... handlers) {
+		if (handlers == null) {
+			return;
+		}
+
+		try {
+			for (Class<?> clazz : handlers) {
+				register(event, toEventHandler(clazz));
+			}
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void createEventEntry(Event event) {
+		events.put(event, new ArrayList<EventHandler>());
 	}
 
 }

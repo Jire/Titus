@@ -1,8 +1,9 @@
 package titus;
 
+import titus.event.EventManager;
 import titus.utility.setting.Settable;
 
-final class Application extends Settable<ApplicationSetting> {
+public final class Application extends Settable<ApplicationSetting> {
 
 	/*
 	 * The static context of this class introduces a
@@ -26,6 +27,8 @@ final class Application extends Settable<ApplicationSetting> {
 	private final String host;
 	private final int port;
 
+	private final EventManager eventManager = new EventManager();
+
 	Application(String host, int port) {
 		this.host = host;
 		this.port = port;
@@ -37,6 +40,10 @@ final class Application extends Settable<ApplicationSetting> {
 
 	int getPort() {
 		return port;
+	}
+
+	public EventManager getEventManager() {
+		return eventManager;
 	}
 
 	@Override
